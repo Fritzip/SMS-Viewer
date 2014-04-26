@@ -62,16 +62,12 @@ class MainWindow(QtGui.QMainWindow):
     def enterconv(self, msgs):
         
         entries = []
-        """
-        with open('back_20130303') as input:
-            for line in input:
-                entries.append(line.strip().split('\t'))
-        """
+
         for name in msgs.keys():
 		    try:
 			    int(name.split(';')[0])
 		    except ValueError:
-			    entries.append([_fromUtf8(name),str(len(msgs[name])), str(self.get_last_date(name)), self.get_last_msg(name)])
+			    entries.append([_fromUtf8(name),len(msgs[name]), str(self.get_last_date(name)), self.get_last_msg(name)])
 
 
         self.tableView.setRowCount(len(entries))
@@ -80,6 +76,8 @@ class MainWindow(QtGui.QMainWindow):
         for i, row in enumerate(entries):
             for j, col in enumerate(row):
                 item = QtGui.QTableWidgetItem(col)
+                if j==1:
+                    item.setData(QtCore.Qt.EditRole, col)
                 self.tableView.setItem(i, j, item)
         
         self.tableView.resizeColumnsToContents()
