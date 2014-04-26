@@ -12,11 +12,24 @@ except AttributeError:
     _fromUtf8 = lambda s: s
 
 ##############################################
+##                  Message
+##############################################
+
+class Message:
+	def __init__(self,listeInfo):
+		self.dateheure = datetime.datetime.strptime(listeInfo[0]+' '+listeInfo[1], '%Y-%m-%d %H:%M:%S')
+		self.inout = listeInfo[2]
+		self.numero = listeInfo[3]
+		self.exp = listeInfo[4]
+		self.message = _fromUtf8(listeInfo[5][:-1])
+
+
+##############################################
 ##                  GUI
 ##############################################
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self,msgs):
+    def __init__(self):
         QtGui.QMainWindow.__init__(self)
 
         self.setWindowTitle("Consultation SMS")
@@ -33,14 +46,7 @@ class MainWindow(QtGui.QMainWindow):
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollArea)
         
         self.tableView = QtGui.QTableWidget(self.scrollArea)
-        self.tableView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.tableView.setAlternatingRowColors(True)
-        self.tableView.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.tableView.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-        self.tableView.setSortingEnabled(True)
-        self.tableView.verticalHeader().setVisible(False)
-        
-        self.enterconv(msgs)
+        self.settable()
 
         self.gridLayout_2.addWidget(self.tableView, 0, 0, 1, 1)
         self.verticalLayout.addWidget(self.scrollArea)
@@ -57,61 +63,68 @@ class MainWindow(QtGui.QMainWindow):
         for layout in layouts:
             layout.setMargin(0)
             layout.setSpacing(0)
-
-    def enterconv(self, msgs):
+    
+    def settable(self):
+        """         """
+        self.tableView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.tableView.setAlternatingRowColors(True)
+        self.tableView.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.tableView.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.tableView.setSortingEnabled(True)
+        self.tableView.verticalHeader().setVisible(False)
         
-        entries = []
+        self.filltable()
+        self.setheadertable()
 
-        for name in msgs.keys():
-		    try:
-			    int(name.split(';')[0])
-		    except ValueError:
-			    entries.append([_fromUtf8(name),len(msgs[name]), self.get_last_date(msgs[name]), self.get_last_msg(msgs[name])])
+        self.tableView.resizeColumnsToContents()
 
 
-        self.tableView.setRowCount(len(entries))
-        self.tableView.setColumnCount(len(entries[0]))
+    def filltable(self):
+        """     """
+        self.conversation()
 
-        for i, row in enumerate(entries):
+        self.tableView.setRowCount(len(self.conv))
+        self.tableView.setColumnCount(len(self.conv[0]))
+
+        for i, row in enumerate(self.conv):
             for j, col in enumerate(row):
                 item = QtGui.QTableWidgetItem()
                 item.setData(QtCore.Qt.EditRole, col)
                 self.tableView.setItem(i, j, item)
         
+    def setheadertable(self):
+        """     """
         head = ["Name","#","Last Date","Last Msg"]
         for i in range(len(head)):
             self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i])) 
         
-        self.tableView.resizeColumnsToContents()
+        
+	def lecture(self,fileName):
+        """        """
+		fichier = open(fileName,'r')
+		self.msgs = {}
+		for lignes in fichier:
+			items = lignes.split('\t')
+			msg = Message(items)
+			if msg.exp not in self.msgs.keys():
+				self.msgs[msg.exp] = []
+			self.msgs[msg.exp].append(msg)
+	
+
+    def conversations(self):
+        """        """
+        self.conv = []
+        for name in self.msgs.keys():
+		    try:
+			    int(name.split(';')[0])
+		    except ValueError:
+			    self.conv.append([_fromUtf8(name),len(self.msgs[name]), self.get_last_date(self.msgs[name]), self.get_last_msg(self.msgs[name])])
 
     def get_last_date(self, name_msgs):
         return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M:%S'), name_msgs))[-1])
         
     def get_last_msg(self, name_msgs):
         return sorted(map(lambda x: x.message, name_msgs))[-1]
-        #return "Salut\nles polets"
-##############################################
-##                  Code
-##############################################
-class Message:
-	def __init__(self,listeInfo):
-		self.dateheure = datetime.datetime.strptime(listeInfo[0]+' '+listeInfo[1], '%Y-%m-%d %H:%M:%S')
-		self.inout = listeInfo[2]
-		self.numero = listeInfo[3]
-		self.exp = listeInfo[4]
-		self.message = _fromUtf8(listeInfo[5][:-1])
-		
-class Lecture:
-	def __init__(self,fileName):
-		fichier = open(fileName,'r')
-		self.d = {}
-		for lignes in fichier:
-			liste = lignes.split('\t')
-			mess = Message(liste)
-			if mess.exp not in self.d.keys():
-				self.d[mess.exp] = []
-			self.d[mess.exp].append(mess)
-	
 ##############################################
 ##                  Main
 ##############################################
