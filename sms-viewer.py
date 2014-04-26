@@ -1,8 +1,10 @@
 #! /bin/env python
 # -*- coding: utf-8 -*-
 
-from PyQt4 import QtCore, QtGui
 import sys
+import datetime
+from PyQt4 import QtCore, QtGui
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -48,9 +50,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         self.setCentralWidget(self.centralwidget)
-
-        #self.statusbar = QtGui.QStatusBar(self)
-        #self.setStatusBar(self.statusbar)
         
         self.marandspa([self.gridLayout, self.gridLayout_2, self.verticalLayout])
 
@@ -67,7 +66,7 @@ class MainWindow(QtGui.QMainWindow):
 		    try:
 			    int(name.split(';')[0])
 		    except ValueError:
-			    entries.append([_fromUtf8(name),len(msgs[name]), str(self.get_last_date(name)), self.get_last_msg(name)])
+			    entries.append([_fromUtf8(name),len(msgs[name]), self.get_last_date(msgs[name]), self.get_last_msg(msgs[name])])
 
 
         self.tableView.setRowCount(len(entries))
@@ -75,33 +74,32 @@ class MainWindow(QtGui.QMainWindow):
 
         for i, row in enumerate(entries):
             for j, col in enumerate(row):
-                item = QtGui.QTableWidgetItem(col)
-                if j==1:
-                    item.setData(QtCore.Qt.EditRole, col)
+                item = QtGui.QTableWidgetItem()
+                item.setData(QtCore.Qt.EditRole, col)
                 self.tableView.setItem(i, j, item)
         
-        self.tableView.resizeColumnsToContents()
         head = ["Name","#","Last Date","Last Msg"]
         for i in range(len(head)):
             self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i])) 
+        
+        self.tableView.resizeColumnsToContents()
 
-    def get_last_date(self, name):
-        return "14/02/1992"
-
-    def get_last_msg(self, name):
-        return "Salut les poulets"
-
+    def get_last_date(self, name_msgs):
+        return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M:%S'), name_msgs))[-1])
+        
+    def get_last_msg(self, name_msgs):
+        return sorted(map(lambda x: x.message, name_msgs))[-1]
+        #return "Salut\nles polets"
 ##############################################
 ##                  Code
 ##############################################
 class Message:
 	def __init__(self,listeInfo):
-		self.date = listeInfo[0]
-		self.heure = listeInfo[1]
+		self.dateheure = datetime.datetime.strptime(listeInfo[0]+' '+listeInfo[1], '%Y-%m-%d %H:%M:%S')
 		self.inout = listeInfo[2]
 		self.numero = listeInfo[3]
 		self.exp = listeInfo[4]
-		self.message = listeInfo[5][:-1]
+		self.message = _fromUtf8(listeInfo[5][:-1])
 		
 class Lecture:
 	def __init__(self,fileName):
