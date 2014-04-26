@@ -46,6 +46,7 @@ class MainWindow(QtGui.QMainWindow):
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollArea)
         
         self.tableView = QtGui.QTableWidget(self.scrollArea)
+        self.lecture('back_20130303')
         self.settable()
 
         self.gridLayout_2.addWidget(self.tableView, 0, 0, 1, 1)
@@ -65,7 +66,6 @@ class MainWindow(QtGui.QMainWindow):
             layout.setSpacing(0)
     
     def settable(self):
-        """         """
         self.tableView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.tableView.setAlternatingRowColors(True)
         self.tableView.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
@@ -76,12 +76,11 @@ class MainWindow(QtGui.QMainWindow):
         self.filltable()
         self.setheadertable()
 
-        self.tableView.resizeColumnsToContents()
+        #self.tableView.resizeColumnsToContents()
 
 
     def filltable(self):
-        """     """
-        self.conversation()
+        self.conversations()
 
         self.tableView.setRowCount(len(self.conv))
         self.tableView.setColumnCount(len(self.conv[0]))
@@ -93,32 +92,28 @@ class MainWindow(QtGui.QMainWindow):
                 self.tableView.setItem(i, j, item)
         
     def setheadertable(self):
-        """     """
         head = ["Name","#","Last Date","Last Msg"]
         for i in range(len(head)):
             self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i])) 
         
         
-	def lecture(self,fileName):
-        """        """
-		fichier = open(fileName,'r')
-		self.msgs = {}
-		for lignes in fichier:
-			items = lignes.split('\t')
-			msg = Message(items)
-			if msg.exp not in self.msgs.keys():
-				self.msgs[msg.exp] = []
-			self.msgs[msg.exp].append(msg)
-	
+    def lecture(self, fileName):
+        fichier = open(fileName,'r')
+        self.msgs = {}
+        for lignes in fichier:
+            items = lignes.split('\t')
+            msg = Message(items)
+            if msg.exp not in self.msgs.keys():
+                self.msgs[msg.exp] = []
+            self.msgs[msg.exp].append(msg)
 
     def conversations(self):
-        """        """
         self.conv = []
         for name in self.msgs.keys():
-		    try:
-			    int(name.split(';')[0])
-		    except ValueError:
-			    self.conv.append([_fromUtf8(name),len(self.msgs[name]), self.get_last_date(self.msgs[name]), self.get_last_msg(self.msgs[name])])
+            try:
+                int(name.split(';')[0])
+            except ValueError:
+                self.conv.append([_fromUtf8(name),len(self.msgs[name]), self.get_last_date(self.msgs[name]), self.get_last_msg(self.msgs[name])])
 
     def get_last_date(self, name_msgs):
         return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M:%S'), name_msgs))[-1])
@@ -129,10 +124,8 @@ class MainWindow(QtGui.QMainWindow):
 ##                  Main
 ##############################################
 if __name__ == "__main__":
-    msgs = Lecture('back_20130303')
-    
     app = QtGui.QApplication(sys.argv)
-    mainwindow = MainWindow(msgs.d)
+    mainwindow = MainWindow()
     mainwindow.show()
     sys.exit(app.exec_())
 
