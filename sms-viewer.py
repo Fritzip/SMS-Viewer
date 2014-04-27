@@ -78,7 +78,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setheadertable()
 
         self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents);
-        #self.tableView.resizeColumnsToContents()
+        self.tableView.resizeColumnsToContents(1)
 
 
     def filltable(self):
