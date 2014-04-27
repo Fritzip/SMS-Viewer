@@ -46,7 +46,7 @@ class MainWindow(QtGui.QMainWindow):
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollArea)
         
         self.tableView = QtGui.QTableWidget(self.scrollArea)
-        self.lecture('back_20130303')
+        self.lecture('backup')
         self.settable()
 
         self.gridLayout_2.addWidget(self.tableView, 0, 0, 1, 1)
