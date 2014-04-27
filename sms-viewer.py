@@ -30,6 +30,7 @@ class Message:
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
+        """ Show all conversations """
         QtGui.QMainWindow.__init__(self)
 
         self.setWindowTitle("Consultation SMS")
@@ -45,7 +46,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollArea)
         
-        self.tableView = QtGui.QTableWidget(self.scrollArea)
+        self.tableView = QtGui.QTableWidget(self.scrollArea) # The table
         self.lecture('backup')
         self.settable()
 
@@ -66,25 +67,27 @@ class MainWindow(QtGui.QMainWindow):
             layout.setSpacing(0)
     
     def settable(self):
+        """ All setters for the table """
         self.tableView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.tableView.setAlternatingRowColors(True)
         self.tableView.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.tableView.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.tableView.setSortingEnabled(True)
         self.tableView.verticalHeader().setVisible(False)
-        self.tableView.horizontalHeader().setStretchLastSection(True)
+        self.tableView.horizontalHeader().setStretchLastSection(True) # Bord collant à la fenetre
 
         self.filltable()
         self.setheadertable()
 
         self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents)
-        self.tableView.verticalHeader().setDefaultSectionSize(40)
-        self.tableView.resizeColumnToContents(0)
+        self.tableView.verticalHeader().setDefaultSectionSize(40) # Hauteur des lignes
+        self.tableView.resizeColumnToContents(0) # Redimenssionne automatiquement la première colonne
         #self.tableView.resizeColumnToContents(1)
         #self.tableView.resizeColumnToContents(2)
         
 
     def filltable(self):
+        """ Fill the table with the list created by self.conversations() """
         self.conversations()
 
         self.tableView.setRowCount(len(self.conv))
@@ -97,12 +100,14 @@ class MainWindow(QtGui.QMainWindow):
                 self.tableView.setItem(i, j, item)
         
     def setheadertable(self):
-        head = ["Name","Last"]
+        """  Create columns headers """
+        head = ["Name","Last"] # 2 columns (à mettre ailleurs / differement)
         for i in range(len(head)):
             self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i])) 
         
         
     def lecture(self, fileName):
+        """ Create self.msgs a dictionnary {names:[<Message object>]} """
         fichier = open(fileName,'r')
         self.msgs = {}
         for lignes in fichier:
@@ -113,6 +118,7 @@ class MainWindow(QtGui.QMainWindow):
             self.msgs[msg.exp].append(msg)
 
     def conversations(self):
+        """ Create self.conv a list of last msgs by names [name (#), last date & msg ] """
         self.conv = []
         for name in self.msgs.keys():
             try:
