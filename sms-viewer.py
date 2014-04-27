@@ -5,11 +5,11 @@ import sys
 import datetime
 from PyQt4 import QtCore, QtGui
 
-
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     _fromUtf8 = lambda s: s
+
 
 ##############################################
 ##                  Message
@@ -76,7 +76,8 @@ class MainWindow(QtGui.QMainWindow):
         self.filltable()
         self.setheadertable()
 
-        #self.tableView.resizeColumnsToContents()
+        self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents);
+        self.tableView.resizeColumnsToContents()
 
 
     def filltable(self):
@@ -119,7 +120,8 @@ class MainWindow(QtGui.QMainWindow):
         return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M:%S'), name_msgs))[-1])
         
     def get_last_msg(self, name_msgs):
-        return sorted(map(lambda x: x.message, name_msgs))[-1]
+        return sorted(map(lambda x: x.message, name_msgs))[-1][:-1]
+
 ##############################################
 ##                  Main
 ##############################################
