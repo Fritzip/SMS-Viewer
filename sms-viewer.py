@@ -72,12 +72,13 @@ class MainWindow(QtGui.QMainWindow):
         self.tableView.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.tableView.setSortingEnabled(True)
         self.tableView.verticalHeader().setVisible(False)
-        
+        self.tableView.horizontalHeader().setStretchLastSection(True)
+
         self.filltable()
         self.setheadertable()
 
         self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents);
-        self.tableView.resizeColumnsToContents()
+        #self.tableView.resizeColumnsToContents()
 
 
     def filltable(self):
