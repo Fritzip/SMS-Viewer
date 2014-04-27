@@ -77,9 +77,12 @@ class MainWindow(QtGui.QMainWindow):
         self.filltable()
         self.setheadertable()
 
-        self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents);
-        self.tableView.resizeColumnsToContents(1)
-
+        self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents)
+        self.tableView.verticalHeader().setDefaultSectionSize(40)
+        self.tableView.resizeColumnToContents(0)
+        #self.tableView.resizeColumnToContents(1)
+        #self.tableView.resizeColumnToContents(2)
+        
 
     def filltable(self):
         self.conversations()
@@ -94,7 +97,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.tableView.setItem(i, j, item)
         
     def setheadertable(self):
-        head = ["Name","#","Last Date","Last Msg"]
+        head = ["Name","Last"]
         for i in range(len(head)):
             self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i])) 
         
@@ -115,10 +118,10 @@ class MainWindow(QtGui.QMainWindow):
             try:
                 int(name.split(';')[0])
             except ValueError:
-                self.conv.append([_fromUtf8(name),len(self.msgs[name]), self.get_last_date(self.msgs[name]), self.get_last_msg(self.msgs[name])])
+                self.conv.append([_fromUtf8(name) + '\n({})'.format(str(len(self.msgs[name]))), self.get_last_date(self.msgs[name]) + '\n' + self.get_last_msg(self.msgs[name])])
 
     def get_last_date(self, name_msgs):
-        return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M:%S'), name_msgs))[-1])
+        return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M'), name_msgs))[-1])
         
     def get_last_msg(self, name_msgs):
         return sorted(map(lambda x: x.message, name_msgs))[-1][:-1]
