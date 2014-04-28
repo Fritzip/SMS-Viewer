@@ -50,16 +50,25 @@ class MainWindow(QtGui.QMainWindow):
         self.lecture('backup')
         self.settable()
 
+        self.tableView.itemDoubleClicked.connect(self.openconv) 
+        #self.centralwidget.returnPressed.connect(self.openconv) 
+
         self.gridLayout_2.addWidget(self.tableView, 0, 0, 1, 1)
         self.verticalLayout.addWidget(self.scrollArea)
 
         self.pushButton = QtGui.QPushButton("Ok Go !",self.centralwidget)
+        self.pushButton.released.connect(self.openconv)
         self.verticalLayout.addWidget(self.pushButton)
 
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         self.setCentralWidget(self.centralwidget)
         
         self.marandspa([self.gridLayout, self.gridLayout_2, self.verticalLayout])
+
+
+    def keyPressEvent(self, e):
+        if e.key() == QtCore.Qt.Key_Return:
+            self.openconv()
 
     def marandspa(self,layouts):
         for layout in layouts:
@@ -85,6 +94,8 @@ class MainWindow(QtGui.QMainWindow):
         #self.tableView.resizeColumnToContents(1)
         #self.tableView.resizeColumnToContents(2)
         
+    def openconv(self):
+        print self.tableView.item(self.tableView.currentRow(),0).text().split('\n')[0]
 
     def filltable(self):
         """ Fill the table with the list created by self.conversations() """
