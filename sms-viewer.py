@@ -27,6 +27,13 @@ class Message:
 ##############################################
 ##                  GUI
 ##############################################
+class ConvWindow(QtGui.QWidget):
+    def __init__(self, name):
+        QtGui.QWidget.__init__(self)
+        self.setWindowTitle("Conversation {}".format(name))
+        self.gridLayout = QtGui.QGridLayout()
+        self.textBrowser = QtGui.QTextBrowser()
+        self.gridLayout.addWidget(self.textBrowser, 0, 0, 1, 1)
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -95,7 +102,10 @@ class MainWindow(QtGui.QMainWindow):
         #self.tableView.resizeColumnToContents(2)
         
     def openconv(self):
-        print self.tableView.item(self.tableView.currentRow(),0).text().split('\n')[0]
+        name = self.tableView.item(self.tableView.currentRow(),0).text().split('\n')[0]
+        self.conv = ConvWindow(name)
+        #self.close()
+        self.conv.show()
 
     def filltable(self):
         """ Fill the table with the list created by self.conversations() """
@@ -149,6 +159,7 @@ class MainWindow(QtGui.QMainWindow):
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mainwindow = MainWindow()
+    #mainwindow = ConvWindow('auie')    
     mainwindow.show()
     sys.exit(app.exec_())
 
