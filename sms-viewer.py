@@ -14,14 +14,13 @@ except AttributeError:
 ##############################################
 ##                  Message
 ##############################################
-
 class Message:
-	def __init__(self,listeInfo):
-		self.dateheure = datetime.datetime.strptime(listeInfo[0]+' '+listeInfo[1], '%Y-%m-%d %H:%M:%S')
-		self.inout = listeInfo[2]
-		self.numero = listeInfo[3]
-		self.exp = listeInfo[4]
-		self.message = _fromUtf8(listeInfo[5][:-1])
+    def __init__(self, listeInfo):
+        self.dateheure = datetime.datetime.strptime(listeInfo[0]+' '+listeInfo[1], '%Y-%m-%d %H:%M:%S')
+        self.inout = listeInfo[2]
+        self.numero = listeInfo[3]
+        self.exp = listeInfo[4]
+        self.message = _fromUtf8(listeInfo[5][:-1])
 
 
 ##############################################
@@ -35,6 +34,7 @@ class ConvWindow(QtGui.QWidget):
         self.textBrowser = QtGui.QTextBrowser()
         self.gridLayout.addWidget(self.textBrowser, 0, 0, 1, 1)
 
+
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         """ Show all conversations """
@@ -45,43 +45,41 @@ class MainWindow(QtGui.QMainWindow):
 
         self.centralwidget = QtGui.QWidget(self)
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
-        
+
         self.verticalLayout = QtGui.QVBoxLayout()
-        
+
         self.scrollArea = QtGui.QScrollArea(self.centralwidget)
         self.scrollArea.setWidgetResizable(True)
 
-        self.gridLayout_2 = QtGui.QGridLayout(self.scrollArea)
-        
-        self.tableView = QtGui.QTableWidget(self.scrollArea) # The table
+        self.gridoftable = QtGui.QGridLayout(self.scrollArea)
+
+        self.tableView = QtGui.QTableWidget(self.scrollArea)
         self.lecture('backup')
         self.settable()
 
-        self.tableView.itemDoubleClicked.connect(self.openconv) 
-        #self.centralwidget.returnPressed.connect(self.openconv) 
+        self.tableView.itemDoubleClicked.connect(self.openconv)
 
-        self.gridLayout_2.addWidget(self.tableView, 0, 0, 1, 1)
+        self.gridoftable.addWidget(self.tableView, 0, 0, 1, 1)
         self.verticalLayout.addWidget(self.scrollArea)
 
-        self.pushButton = QtGui.QPushButton("Ok Go !",self.centralwidget)
+        self.pushButton = QtGui.QPushButton("Ok Go !", self.centralwidget)
         self.pushButton.released.connect(self.openconv)
         self.verticalLayout.addWidget(self.pushButton)
 
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         self.setCentralWidget(self.centralwidget)
-        
-        self.marandspa([self.gridLayout, self.gridLayout_2, self.verticalLayout])
 
+        self.marandspa([self.gridLayout, self.gridoftable, self.verticalLayout])
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Return:
             self.openconv()
 
-    def marandspa(self,layouts):
+    def marandspa(self, layouts):
         for layout in layouts:
             layout.setMargin(0)
             layout.setSpacing(0)
-    
+
     def settable(self):
         """ All setters for the table """
         self.tableView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
@@ -90,21 +88,18 @@ class MainWindow(QtGui.QMainWindow):
         self.tableView.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.tableView.setSortingEnabled(True)
         self.tableView.verticalHeader().setVisible(False)
-        self.tableView.horizontalHeader().setStretchLastSection(True) # Bord collant à la fenetre
+        self.tableView.horizontalHeader().setStretchLastSection(True)  # Bord collant à la fenetre
 
         self.filltable()
         self.setheadertable()
 
         self.tableView.verticalHeader().resizeSections(QtGui.QHeaderView.ResizeToContents)
-        self.tableView.verticalHeader().setDefaultSectionSize(40) # Hauteur des lignes
-        self.tableView.resizeColumnToContents(0) # Redimenssionne automatiquement la première colonne
-        #self.tableView.resizeColumnToContents(1)
-        #self.tableView.resizeColumnToContents(2)
-        
+        self.tableView.verticalHeader().setDefaultSectionSize(40)  # Hauteur des lignes
+        self.tableView.resizeColumnToContents(0)  # Redimenssionne automatiquement la première colonne
+
     def openconv(self):
-        name = self.tableView.item(self.tableView.currentRow(),0).text().split('\n')[0]
+        name = self.tableView.item(self.tableView.currentRow(), 0).text().split('\n')[0]
         self.conv = ConvWindow(name)
-        #self.close()
         self.conv.show()
 
     def filltable(self):
@@ -119,17 +114,16 @@ class MainWindow(QtGui.QMainWindow):
                 item = QtGui.QTableWidgetItem()
                 item.setData(QtCore.Qt.EditRole, col)
                 self.tableView.setItem(i, j, item)
-        
+
     def setheadertable(self):
         """  Create columns headers """
-        head = ["Name","Last"] # 2 columns (à mettre ailleurs / differement)
+        head = ["Name", "Last"]  # 2 columns (à mettre ailleurs / differement)
         for i in range(len(head)):
-            self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i])) 
-        
-        
+            self.tableView.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(head[i]))
+
     def lecture(self, fileName):
         """ Create self.msgs a dictionnary {names:[<Message object>]} """
-        fichier = open(fileName,'r')
+        fichier = open(fileName, 'r')
         self.msgs = {}
         for lignes in fichier:
             items = lignes.split('\t')
@@ -149,9 +143,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def get_last_date(self, name_msgs):
         return _fromUtf8(sorted(map(lambda x: x.dateheure.strftime('%Y-%m-%d %H:%M'), name_msgs))[-1])
-        
+
     def get_last_msg(self, name_msgs):
         return sorted(map(lambda x: x.message, name_msgs))[-1][:-1]
+
 
 ##############################################
 ##                  Main
@@ -159,7 +154,5 @@ class MainWindow(QtGui.QMainWindow):
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mainwindow = MainWindow()
-    #mainwindow = ConvWindow('auie')    
     mainwindow.show()
     sys.exit(app.exec_())
-
