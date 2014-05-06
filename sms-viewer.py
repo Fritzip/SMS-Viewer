@@ -26,13 +26,34 @@ class Message:
 ##############################################
 ##                  GUI
 ##############################################
-class ConvWindow(QtGui.QWidget):
-    def __init__(self, name):
-        QtGui.QWidget.__init__(self)
-        self.setWindowTitle("Conversation {}".format(name))
-        self.gridLayout = QtGui.QGridLayout()
-        self.textBrowser = QtGui.QTextBrowser()
-        self.gridLayout.addWidget(self.textBrowser, 0, 0, 1, 1)
+class ConvWindow(QtGui.QScrollArea):
+    def __init__(self, name, msgs):
+        self.msgs = msgs
+        self.name = _fromUtf8(name)
+        QtGui.QScrollArea.__init__(self)
+        self.setWindowTitle("Conversation {}".format(self.name))
+        self.gridLayout = QtGui.QGridLayout(self)
+        # print self.msgs.keys()
+        for num, msg in enumerate(self.msgs[name]):
+            # print msg.message
+            self.dispmsg(msg, num)
+
+    def dispmsg(self, msg, num):
+        self.lab = QtGui.QLabel()
+        self.lab.setText(msg.message)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lab.sizePolicy().hasHeightForWidth())
+        self.lab.setSizePolicy(sizePolicy)
+        self.lab.setMinimumSize(QtCore.QSize(0, 0))
+        self.lab.setMaximumSize(QtCore.QSize(500, 16777215))
+        self.lab.setWordWrap(True)
+        if msg.inout == 'in':
+            self.gridLayout.addWidget(self.lab, num, 0, 1, 3)
+        elif msg.inout == 'out':
+            self.lab.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+            self.gridLayout.addWidget(self.lab, num, 1, 1, 3)
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -54,7 +75,7 @@ class MainWindow(QtGui.QMainWindow):
         self.gridoftable = QtGui.QGridLayout(self.scrollArea)
 
         self.tableView = QtGui.QTableWidget(self.scrollArea)
-        self.lecture('backup')
+        self.lecture('back_20130303')
         self.settable()
 
         self.tableView.itemDoubleClicked.connect(self.openconv)
@@ -99,7 +120,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def openconv(self):
         name = self.tableView.item(self.tableView.currentRow(), 0).text().split('\n')[0]
-        self.conv = ConvWindow(name)
+        self.conv = ConvWindow(str(name), self.msgs)
         self.conv.show()
 
     def filltable(self):
