@@ -11,9 +11,9 @@ except AttributeError:
     _fromUtf8 = lambda s: s
 
 
-##############################################
+############################################################################################
 ##                  Message
-##############################################
+############################################################################################
 class Message:
     def __init__(self, listeInfo):
         self.dateheure = datetime.datetime.strptime(listeInfo[0]+' '+listeInfo[1], '%Y-%m-%d %H:%M:%S')
@@ -23,39 +23,59 @@ class Message:
         self.message = _fromUtf8(listeInfo[5][:-1])
 
 
-##############################################
-##                  GUI
-##############################################
+############################################################################################
+##                  Conversation Window of 'name'
+############################################################################################
 class ConvWindow(QtGui.QScrollArea):
     def __init__(self, name, msgs):
         self.msgs = msgs
         self.name = _fromUtf8(name)
         QtGui.QScrollArea.__init__(self)
         self.setWindowTitle("Conversation {}".format(self.name))
-        self.gridLayout = QtGui.QGridLayout(self)
-        # print self.msgs.keys()
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setWidgetResizable(True)
+
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout = QtGui.QGridLayout()
+
         for num, msg in enumerate(self.msgs[name]):
-            # print msg.message
             self.dispmsg(msg, num)
+
+        self.gridLayout.setColumnStretch(0, 1)
+        self.gridLayout.setColumnStretch(1, 5)
+        self.gridLayout.setColumnStretch(2, 1)
+        self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_2.addItem(spacerItem, 1, 0, 1, 1)
+        self.setWidget(self.scrollAreaWidgetContents)
 
     def dispmsg(self, msg, num):
         self.lab = QtGui.QLabel()
         self.lab.setText(msg.message)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lab.sizePolicy().hasHeightForWidth())
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.lab.sizePolicy().hasHeightForWidth())
         self.lab.setSizePolicy(sizePolicy)
-        self.lab.setMinimumSize(QtCore.QSize(0, 0))
-        self.lab.setMaximumSize(QtCore.QSize(500, 16777215))
+        # self.lab.setMinimumSize(QtCore.QSize(0, 0))
+        # self.lab.setMaximumSize(QtCore.QSize(500, 16777215))
         self.lab.setWordWrap(True)
         if msg.inout == 'in':
-            self.gridLayout.addWidget(self.lab, num, 0, 1, 3)
+            self.gridLayout.addWidget(self.lab, num, 0, 1, 2)
         elif msg.inout == 'out':
-            self.lab.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-            self.gridLayout.addWidget(self.lab, num, 1, 1, 3)
+            self.lab.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            self.gridLayout.addWidget(self.lab, num, 1, 1, 2)
 
 
+############################################################################################
+#                   MainWindow select the person you want to see the conversation of
+############################################################################################
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         """ Show all conversations """
@@ -169,9 +189,9 @@ class MainWindow(QtGui.QMainWindow):
         return sorted(map(lambda x: x.message, name_msgs))[-1][:-1]
 
 
-##############################################
+############################################################################################
 ##                  Main
-##############################################
+############################################################################################
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mainwindow = MainWindow()
