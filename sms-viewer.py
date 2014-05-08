@@ -30,13 +30,12 @@ class ConvWindow(QtGui.QScrollArea):
     def __init__(self, name, msgs):
         self.msgs = msgs
         self.name = _fromUtf8(name)
+
         QtGui.QScrollArea.__init__(self)
+
         self.setWindowTitle("Conversation {}".format(self.name))
 
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
         self.setWidgetResizable(True)
 
@@ -50,6 +49,7 @@ class ConvWindow(QtGui.QScrollArea):
         self.gridLayout.setColumnStretch(0, 1)
         self.gridLayout.setColumnStretch(1, 5)
         self.gridLayout.setColumnStretch(2, 1)
+
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.gridLayout_2.addItem(spacerItem, 1, 0, 1, 1)
@@ -59,12 +59,7 @@ class ConvWindow(QtGui.QScrollArea):
         self.lab = QtGui.QLabel()
         self.lab.setText(msg.message)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # sizePolicy.setHeightForWidth(self.lab.sizePolicy().hasHeightForWidth())
         self.lab.setSizePolicy(sizePolicy)
-        # self.lab.setMinimumSize(QtCore.QSize(0, 0))
-        # self.lab.setMaximumSize(QtCore.QSize(500, 16777215))
         self.lab.setWordWrap(True)
         if msg.inout == 'in':
             self.gridLayout.addWidget(self.lab, num, 0, 1, 2)
