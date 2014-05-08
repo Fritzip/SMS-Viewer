@@ -63,8 +63,10 @@ class ConvWindow(QtGui.QScrollArea):
         self.lab.setWordWrap(True)
         if msg.inout == 'in':
             self.gridLayout.addWidget(self.lab, num, 0, 1, 2)
+            self.lab.setStyleSheet("QLabel {border:2px solid grey; border-radius: 5px; background-color : orange; color : white;}")
         elif msg.inout == 'out':
             self.lab.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            self.lab.setStyleSheet("QLabel {border:2px solid grey; border-radius: 5px; background-color : green; color : white;}")
             self.gridLayout.addWidget(self.lab, num, 1, 1, 2)
 
 
@@ -90,7 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         self.gridoftable = QtGui.QGridLayout(self.scrollArea)
 
         self.tableView = QtGui.QTableWidget(self.scrollArea)
-        self.lecture('back_20130303')
+        self.lecture('backup')
         self.settable()
 
         self.tableView.itemDoubleClicked.connect(self.openconv)
